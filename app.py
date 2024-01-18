@@ -20,7 +20,6 @@ def add_price_range_and_visualize_contribution(df, col_name, num_bins=4):
 
     cluster_centers = np.sort(kmeans.cluster_centers_.flatten())
 
-    # Round the cluster center values to integers
     cluster_centers = np.round(cluster_centers).astype(int)
 
     bins = np.concatenate(([-np.inf], cluster_centers, [np.inf]))
@@ -43,10 +42,8 @@ def add_price_range_and_visualize_contribution(df, col_name, num_bins=4):
 
     st.pyplot(hist_fig)
 
-    # Calculate the total sales for each price range
     total_sales_by_range = df.groupby('Price Range')[col_name].sum()
 
-    # Calculate the contribution percentage for each price range
     contribution_percentage = (total_sales_by_range / df[col_name].sum()) * 100
 
     # Visualize the contribution
@@ -66,32 +63,24 @@ def add_price_range_and_visualize_contribution(df, col_name, num_bins=4):
 def main():
     st.title("Price Range Prediction")
 
-    # User input for number of bins
     num_bins = st.slider("Select the number of bins:", min_value=2, max_value=20, value=4)
 
-    # User input for column name
     col_name = st.text_input("Enter the column name:", "Retail Price")
 
-    # User input for sheet name
     sheet_name = st.text_input("Enter the sheet name:", "Sheet1")
 
     header = st.number_input("Enter headers to skip if any:",0)
 
-    category = st.text_input("Enter Category (Toothpaste/bodywash) :  ", "Toothpaste")
-    # Upload file through Streamlit
     uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx", "xls"])
 
     if uploaded_file is not None:
-        # Read the uploaded file into a DataFrame
         df = pd.read_excel(uploaded_file, sheet_name=sheet_name, header=header)
 
-        # Display the original DataFrame
         st.subheader("Original Data")
         st.write(df)
 
         df_result = add_price_range_and_visualize_contribution(df, col_name, num_bins)
 
-        # Display the DataFrame with the added 'Price Range' column
         st.subheader("Data with Price Range")
         st.write(df_result)
 
